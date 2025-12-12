@@ -1,6 +1,12 @@
 import graphene
 
-class Query(graphene.ObjectType):
+class CRMQuery(graphene.ObjectType):
+    customer_count = graphene.Int()
+
+    def resolve_customer_count(root, info):
+        return 42
+
+class Query(CRMQuery, graphene.ObjectType):
     hello = graphene.String()
     
     def resolve_hello(root, info):

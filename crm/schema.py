@@ -47,13 +47,13 @@ class CreateCustomer(graphene.Mutation):
     message = graphene.Boolean()
 
     def mutate(self, info, name, email, phone = None):
-        new_customer = Customer.objects.create(
+        customer = Customer.objects.create(
             name = name,
             email = email,
             phone = phone
         )
-        new_customer.save()
-        return CreateCustomer(customer = new_customer, message = True)
+        customer.save()
+        return CreateCustomer(customer = customer, message = True)
     
 class CreateOrder(graphene.Mutation):
     class Arguments:
@@ -132,7 +132,7 @@ class CRMQuery(graphene.ObjectType):
         customer = Customer.objects.get(pk=id)
         return customer
 
-class CRMMutation(graphene.ObjectType):
+class Mutation(graphene.ObjectType):
     create_customer = CreateCustomer.Field()
     bulk_create_customers = BulkCreateCustomers.Field()
     create_product = CreateProduct.Field()

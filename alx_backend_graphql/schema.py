@@ -1,15 +1,10 @@
 import graphene
-
-class CRMQuery(graphene.ObjectType):
-    customer_count = graphene.Int()
-
-    def resolve_customer_count(root, info):
-        return 42
+from crm.schema import CRMQuery, CRMMutation
 
 class Query(CRMQuery, graphene.ObjectType):
-    hello = graphene.String()
+    pass
+
+class Mutation(CRMMutation, graphene.ObjectType):
+    pass
     
-    def resolve_hello(root, info):
-        return "Hello, GraphQL!"
-    
-schema = graphene.Schema(query=Query)
+schema = graphene.Schema(query=Query, mutation=Mutation)

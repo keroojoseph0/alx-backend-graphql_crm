@@ -44,7 +44,6 @@ class CreateCustomer(graphene.Mutation):
         phone = graphene.String()
 
     customer = graphene.Field(CustomerType)
-    message = graphene.Boolean()
 
     def mutate(self, info, name, email, phone = None):
         customer = Customer.objects.create(
@@ -53,7 +52,7 @@ class CreateCustomer(graphene.Mutation):
             phone = phone
         )
         customer.save()
-        return CreateCustomer(customer = customer, message = True)
+        return CreateCustomer(customer=customer)
     
 class CreateOrder(graphene.Mutation):
     class Arguments:

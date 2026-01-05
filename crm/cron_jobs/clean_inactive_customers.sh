@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Move to project root (IMPORTANT for manage.py)
-cd /path/to/your/project || exit 1
+cd /home/pheonix/Developments/alx-backend-graphql_crm || exit 1
 
 # Run Django shell command and capture deleted count
 DELETED_COUNT=$(python manage.py shell -c "

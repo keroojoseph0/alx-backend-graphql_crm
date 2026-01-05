@@ -3,7 +3,10 @@ from django.forms import ValidationError
 import graphene
 from graphene_django import DjangoObjectType
 from graphql import GraphQLError
-from .models import Customer, Product, Order
+from .models import Customer, Order
+from django.db.models import F
+from crm.models import Product
+
 
 class CustomerType(DjangoObjectType):
     class Meta:
@@ -118,6 +121,35 @@ class BulkCreateCustomers(graphene.Mutation):
                 errors.append(f"Customer {idx + 1}: {str(e)}")
 
         return BulkCreateCustomers(created_customers=created_customers, errors=errors)
+    
+
+
+class ProductType(DjangoObjectType):
+    class Meta:
+        model = Product
+        fields = ("id", "name", "stock")
+
+
+class UpdateLowStockProducts(graphene.Mutation):
+    success = graphene.Boolean()
+    products = graphene.List(ProductType)
+    message = graphene.String()
+
+    @classmethod
+    def mutate(cls, root, info):
+        low_stock_products = Product.objects.filter(stock__lt=10)
+
+        # Simulate restocking (+10)
+        low_stock_products.update(stock=F("stock") + 10)
+
+        updated_products = Product.objects.filter(stock__gte=10)
+
+        return UpdateLowStockProducts(
+            success=True,
+            products=updated_products,
+            message="Low stock products have been restocked successfully."
+        )
+
 
 
 class CRMQuery(graphene.ObjectType):
@@ -131,8 +163,10 @@ class CRMQuery(graphene.ObjectType):
         customer = Customer.objects.get(pk=id)
         return customer
 
+
 class Mutation(graphene.ObjectType):
     create_customer = CreateCustomer.Field()
     bulk_create_customers = BulkCreateCustomers.Field()
     create_product = CreateProduct.Field()
     create_order = CreateOrder.Field()
+    update_low_stock_products = UpdateLowStockProducts.Field()
